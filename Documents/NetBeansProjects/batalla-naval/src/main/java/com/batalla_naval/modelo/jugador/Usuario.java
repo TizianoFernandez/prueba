@@ -9,7 +9,7 @@ import com.batalla_naval.modelo.recursos.ResultadoDisparo;
 import com.batalla_naval.modelo.tablero.Tablero;
 
 
-public abstract class Usuario {
+public abstract class Usuario{
     protected String nombre;
     protected int puntaje;
     protected int partidasGanadas;
@@ -33,7 +33,7 @@ public abstract class Usuario {
         this.tableroEnemigo = new String[10][10];
     }
     
-    
+      
     /*
         GETTERS
     */
@@ -66,7 +66,7 @@ public abstract class Usuario {
     public Tablero getTablero(){
         return this.tablero;
     }
-    
+      
     public ResultadoDisparo getUltimoDisparo(){
         return this.ultimoDisparo;
     }
@@ -93,9 +93,6 @@ public abstract class Usuario {
         return this.getCantidadBarcos() == 0;
     }
     
-    public void crearTablero(){
-        this.tablero = new Tablero();
-    }
     
     public void inicializarTableroEnemigo() {
         for (int i = 0; i < 10; i++) {
@@ -132,6 +129,7 @@ public abstract class Usuario {
         }
         return barcosRestantes;
     }
+    
     
     public abstract boolean colocarBarcoJugador(int x, int y, boolean vertical, int numeroBarco);
     public abstract ResultadoDisparo disparar(int x, int y, Usuario destino);

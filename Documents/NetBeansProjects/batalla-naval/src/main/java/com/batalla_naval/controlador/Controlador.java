@@ -15,23 +15,61 @@ public class Controlador {
     
     public void partidaIA(){
         this.vista.bienvenida();
+        String nombre = this.vista.pedirNombreJugador();
+        juego.setPartidaIA(nombre);
+        juego.getJugador1().addObservador(vista);
+        juego.getJugador1().getTablero().addObservador(vista);
         boolean termino = false;
-        while(termino){
-            int opcion = this.vista.mostrarMenu();
+        int opcion;
+        while(!termino){
+            opcion = vista.mostrarMenu();
             
             while(opcion != 1 && opcion != 2){
                 vista.opcionIncorrecta();
-                opcion = this.vista.mostrarMenu();
+                opcion = vista.mostrarMenu();
             }
             
             switch(opcion){
                 case 1:
-                    String nombre = this.vista.pedirNombreJugador();
-                    juego.setPartidaIA(nombre);
+                    vista.mostrarTableroVacio();
+                    int barcoSeleccionado, x, y;
+                    boolean vertical, colocado = false;
+                    
+                    while(juego.getJugador1().cuantosBarcos() != 0){
+                        barcoSeleccionado = vista.pedirBarcoAColocar(juego.getJugador1());
+                        x = vista.pedirX();
+                        y = vista.pedirY();
+                        vertical = vista.pedirVertical();
+                        colocado = juego.getJugador1().colocarBarcoJugador(x, y, vertical, barcoSeleccionado-1);
+                        if(!colocado){
+                            vista.errorAlColocar();
+                        }
+                    }
+                    
+                    juego.getIA().colocarBarcoJugador(0, 0, false, 0);
+                    juego.getJugador1().inicializarDisparosRecibidos();
+                    
+                    while(juego.getJugador1().getCantidadBarcos() > 0 && juego.getIA().getCantidadBarcos() > 0){
+                        vista.mostrarTurno(juego.getTurnoActual());
+                        
+                        if(juego.getTurnoActual() == juego.getJugador1()){
+                            x = vista.pedirX();
+                            y = vista.pedirY();
+                            juego.getTurnoActual().disparar(x, y, juego.getIA());
+                            
+                        }
+                        else{
+                            juego.getTurnoActual().disparar(0, 0, juego.getJugador1());
+                        }
+                        
+                        juego.determinarTurno();
+                    }
+                    vista.mostrarGanador(juego.determinarGanador());
+                    this.juego.reiniciarPartidaIA();
                     
                     break;
                 case 2:
-                    System.out.println("salir");
+                    vista.mostrarSalir();
                     termino = true;
                     break;
                 default:

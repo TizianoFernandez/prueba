@@ -3,10 +3,9 @@ package com.batalla_naval.vista;
 import com.batalla_naval.modelo.barcos.*;
 import com.batalla_naval.modelo.jugador.Usuario;
 import com.batalla_naval.modelo.recursos.ResultadoDisparo;
-import com.batalla_naval.observer.Observador;
 import java.util.Scanner;
 
-public class VistaConsola implements Observador, VistaInt{
+public class VistaConsola implements VistaInt{
     private Scanner sc = new Scanner(System.in);;
     private final String[] filas = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
     
@@ -14,6 +13,12 @@ public class VistaConsola implements Observador, VistaInt{
     @Override
     public void actualizarTablero(ModeloBarco[][] tablero){
         this.mostrarTablero(tablero);
+    }
+    
+    
+    @Override
+    public void actualizarDisparoRecibido(ResultadoDisparo ultimoRecibido, int xRecibido, int yRecibido, String[][] tableroDisparos){
+        this.actualizarRecibido(ultimoRecibido, xRecibido, yRecibido, tableroDisparos);
     }
     
     
@@ -79,16 +84,20 @@ public class VistaConsola implements Observador, VistaInt{
                 tablero[x][y] = " ~ ";
                 this.mostrarTableroEnemigo(tablero);
                 System.out.println("AGUA");
+                this.esperar(2000);
+                
             }
             case TOCADO -> {
                 tablero[x][y] = " X ";
                 this.mostrarTableroEnemigo(tablero);
                 System.out.println("TOCADO");
+                this.esperar(2000);
             }
             case PIEZA_ROTA -> {
                 tablero[x][y] = " X ";
                 this.mostrarTableroEnemigo(tablero);
                 System.out.println("PIEZA ROTA");
+                this.esperar(2000);
             }
             case HUNDIDO -> {
                 tablero[x][y] = " X ";
@@ -99,6 +108,7 @@ public class VistaConsola implements Observador, VistaInt{
                 tablero[x][y] = " ~ ";
                 this.mostrarTableroEnemigo(tablero);
                 System.out.println("AGUA");
+                this.esperar(2000);
             }
         }
         
@@ -106,7 +116,8 @@ public class VistaConsola implements Observador, VistaInt{
     
     @Override
     public int pedirX(){
-        System.out.println("Ingrese la coordenada de la fila (A-J): ");
+        System.out.println();
+        System.out.print("Ingrese la coordenada de la fila (A-J): ");
         
         String respuesta;
         while(true){
@@ -126,7 +137,8 @@ public class VistaConsola implements Observador, VistaInt{
     @Override
     public int pedirY(){
         int numero;
-        System.out.println("Ingrese la coordenada de la columna (1-10): ");
+        System.out.println();
+        System.out.print("Ingrese la coordenada de la columna (1-10): ");
         while(true){
             while(!sc.hasNextInt()){
                 System.out.println("Ingrese un numero correcto: ");
@@ -148,7 +160,8 @@ public class VistaConsola implements Observador, VistaInt{
     
     @Override
     public boolean pedirVertical() {
-        System.out.println("El barco va en vertical? (s/n): ");
+        System.out.println();
+        System.out.print("El barco va en vertical? (s/n): ");
         String respuesta;
         while(true){
             respuesta = sc.next().toLowerCase();
@@ -169,7 +182,7 @@ public class VistaConsola implements Observador, VistaInt{
     @Override
     public int pedirBarcoAColocar(Usuario usuario){
         this.mostrarBarcosJugador(usuario.getBarcos());
-      
+        System.out.println();
         System.out.print("Ingrese el numero del barco que desea colocar: ");
         
         while(true){
@@ -181,7 +194,7 @@ public class VistaConsola implements Observador, VistaInt{
             int numero = sc.nextInt();
             
             if(numero < 1 || numero > usuario.cuantosBarcos()){
-                System.out.print("\nNumero invalido, ingresar un numero entre 1 y " + usuario.cuantosBarcos());
+                System.out.println("\nNumero invalido, ingresar un numero entre 1 y " + usuario.cuantosBarcos());
             }
             else{
                 return numero;
@@ -193,10 +206,11 @@ public class VistaConsola implements Observador, VistaInt{
     @Override
     public void mostrarBarcosJugador(ModeloBarco[] barcos){
         int ind = 1;
+        System.out.println();
         System.out.println("BARCOS DISPONIBLES:");
         for (ModeloBarco barco : barcos) {
             if (barco != null) {
-                System.out.printf("%d- %s\n", ind, barco.getNombre());
+                System.out.printf("%d- %s (%d casillas)\n", ind, barco.getNombre(), barco.getLongitud());
                 ind++;
             }
         }
@@ -213,12 +227,16 @@ public class VistaConsola implements Observador, VistaInt{
     
     @Override
     public void bienvenida(){
-        
+        System.out.println("\t\t~~~~~~~~~~~~~");
+        System.out.println("\t\tBATALLA NAVAL");
+        System.out.println("\t\t~~~~~~~~~~~~~");
+        System.out.println("");
     }
     
     
     @Override
     public int mostrarMenu(){
+        System.out.println();
         System.out.println("1- JUGAR VS IA");
         System.out.println("2- SALIR");
         System.out.print("Elija una opcion: ");
@@ -238,5 +256,84 @@ public class VistaConsola implements Observador, VistaInt{
     public void opcionIncorrecta(){
         System.out.println("Opcion incorrecta. Debe elegir un numero entre 1 y 2.");
         System.out.println();
+    }
+    
+    
+    @Override
+    public void mostrarTurno(Usuario turno){
+        System.out.println();
+        System.out.printf("Turno de %s para disparar...", turno.getNombre());
+        System.out.println();
+    }
+    
+    
+    @Override
+    public void errorAlColocar(){
+        System.out.println("Coordenadas invalidas. Ingrese nuevamente...");
+        System.out.println();
+    }
+    
+    
+    @Override
+    public void mostrarTableroVacio(){
+        System.out.println();
+        System.out.println("Tablero: ");
+        System.out.println();
+        System.out.print("   ");
+        for (int col = 1; col <= 10; col++) {
+            System.out.printf("% d ", col);
+        }
+        System.out.println();
+
+        String filaLetra;
+        for (int i = 0; i < 10; i++) {
+            filaLetra = this.filas[i];
+            System.out.print(filaLetra + "  ");
+            for (int j = 0; j < 10; j++) {
+                System.out.print(" ~ ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
+    
+    @Override
+    public void actualizarRecibido(ResultadoDisparo ultimoRecibido, int xRecibido, int yRecibido, String[][] tableroDisparos) {
+        System.out.println("Disparo recibido en " + this.filas[xRecibido] + " - " + (yRecibido+1));
+        tableroDisparos[xRecibido][yRecibido] = " X ";
+        this.mostrarTableroEnemigo(tableroDisparos);
+        
+        switch (ultimoRecibido){
+            case AGUA -> System.out.println("AGUA");
+            case TOCADO -> System.out.println("BARCO TOCADO");
+            case PIEZA_ROTA -> System.out.println("PIEZA ROTA");
+            case HUNDIDO -> System.out.println("BARCO HUNDIDO");
+            default -> System.out.println("AGUA");
+        }
+        
+        this.esperar(2000);
+    }
+    
+    @Override
+    public void mostrarSalir(){
+        System.out.println();
+        System.out.println("Partida Terminada...");
+    }
+    
+    
+    @Override
+    public void mostrarGanador(Usuario ganador){
+        System.out.println();
+        System.out.println(ganador.getNombre() + " ha ganado.");
+    }
+    
+    
+    public void esperar(int milisegundos) {
+        try {
+            Thread.sleep(milisegundos);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

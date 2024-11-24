@@ -6,48 +6,78 @@ import com.batalla_naval.modelo.recursos.ResultadoDisparo;
 //clase que debe comunicarse con el controlador y asi levantar las vistas
 
 public class Juego {
-    private Usuario jugador1;
-    private Usuario jugador2;
+    private Jugador jugador1;
+    private Jugador jugador2;
+    private IA ia;
     private Usuario turnoActual;
     
     
     public Juego(){
         this.jugador1 = null;
-        this.jugador2 = null; // IA / posible jugador2
+        this.jugador2 = null;
         this.turnoActual = null;
     }
     
     
     public void setPartidaIA(String nombre){
         this.jugador1 = new Jugador(nombre);
-        this.jugador2 = new IA();
+        this.ia = new IA();
+        
+        this.jugador1.reiniciarJugador();
         this.turnoActual = this.jugador1;
-        this.cargarBarcosJugadores();
+
+        this.ia.reiniciarIA();
     }
     
-    
-    public void cargarBarcosJugadores(){
-        this.jugador1.cargarBarcos();
-        this.jugador2.cargarBarcos();
+    public void reiniciarPartidaIA(){
+        this.jugador1.reiniciarJugador();
+        this.turnoActual = this.jugador1;
+
+        this.ia.reiniciarIA();
     }
+    
+    public void cargarBarcosJugadores(Usuario jugador){
+        jugador.cargarBarcos();
+    }
+    
     
     public Usuario determinarGanador(){
-        if(this.jugador1.getCantidadBarcos() == 0){
-            return this.jugador2;
-        }
-        else{
-            return this.jugador1;
+        if(this.ia == null){
+            if(this.jugador1.getCantidadBarcos() == 0){
+                return this.jugador2;
+            }
+            else{
+                return this.jugador1;
+            }
+        }else{
+            if(this.jugador1.getCantidadBarcos() == 0){
+                return this.ia;
+            }
+            else{
+                return this.jugador1;
+            }
         }
     }
     
     
     public void determinarTurno(){
-        if(this.turnoActual.getUltimoDisparo() == ResultadoDisparo.AGUA){
-            if(this.turnoActual == this.jugador1){
-                this.turnoActual = jugador2;
+        if(this.ia == null){
+            if(this.turnoActual.getUltimoDisparo() == ResultadoDisparo.AGUA){
+                if(this.turnoActual == this.jugador1){
+                    this.turnoActual = jugador2;
+                }
+                else{
+                    this.turnoActual = jugador1;
+                }
             }
-            else{
-                this.turnoActual = jugador2;
+        }else{
+            if(this.turnoActual.getUltimoDisparo() == ResultadoDisparo.AGUA){
+                if(this.turnoActual == this.jugador1){
+                    this.turnoActual = ia;
+                }
+                else{
+                    this.turnoActual = jugador1;
+                }
             }
         }
     }
@@ -59,12 +89,16 @@ public class Juego {
     
     
     
-    public Usuario getJugador1(){
+    public Jugador getJugador1(){
         return this.jugador1;
     }
     
-    public Usuario getJugador2(){
+    public Jugador getJugador2(){
         return this.jugador2;
+    }
+    
+    public IA getIA(){
+        return this.ia;
     }
     
     public Usuario getTurnoActual(){

@@ -130,4 +130,12 @@ public class Tablero implements Observable{
         
     }
     
+    public void reiniciarTablero(){
+        this.tablero = new ModeloBarco[10][10];
+    }
+    
+    
+    public ModeloBarco[][] getTablero(){
+        return this.tablero;
+    }
 }
